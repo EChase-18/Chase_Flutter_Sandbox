@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.chase_sandbox_one">
+    package="com.example.ChaseSandbox">
    <application
-        android:label="chase_sandbox_one"
+        android:label="ChaseSandbox"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"

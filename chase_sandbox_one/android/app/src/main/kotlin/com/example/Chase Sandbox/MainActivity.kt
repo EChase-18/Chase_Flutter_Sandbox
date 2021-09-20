@@ -1,4 +1,4 @@
-package com.example.chase_sandbox_one
+package com.example.ChaseSandbox
 
 import io.flutter.embedding.android.FlutterActivity
 

@@ -29,6 +29,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_launcher_icons: ^0.9.2
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -46,6 +47,11 @@ dev_dependencies:
   # rules and activating additional ones.
   flutter_lints: ^1.0.0
 
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "images/awesome_sand_3000.jpg"
+
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
@@ -58,7 +64,8 @@ flutter:
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
-  # assets:
+  assets:
+    - images/
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
 
