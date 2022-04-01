@@ -21,11 +21,36 @@ class MyApp extends StatelessWidget {
       routes: [
         GoRoute(
           path: '/',
-          builder: (context, state) => const HomeScreen(),
+          // pageBuilder: (context, state) => NoTransitionPage<void>(
+          //   key: state.pageKey,
+          //   child: const HomeScreen(),
+          // ),
+          pageBuilder: (context, state) => CustomTransitionPage(
+            child: const HomeScreen(),
+            transitionDuration: const Duration(seconds: 5),
+            transitionsBuilder: (context, anim1, anim2, child) => SizeTransition(
+              sizeFactor: anim1,
+              axis: Axis.vertical,
+              axisAlignment: 1.0,
+              child: child,
+            ),
+          ),
           routes: [
             GoRoute(
               path: 'detail',
-              builder: (context, state) => const DetailScreen(),
+              // pageBuilder: (context, state) => NoTransitionPage<void>(
+              //   key: state.pageKey,
+              //   child: const DetailScreen(),
+              // ),
+              pageBuilder: (context, state) => CustomTransitionPage(
+                child: const DetailScreen(),
+                transitionDuration: const Duration(milliseconds: 150),
+                transitionsBuilder: (context, anim1, anim2, child) => FadeTransition(
+                  opacity: anim1,
+                  child: child,
+                ),
+              ),
+              // builder: (context, state) => const DetailScreen(),
             ),
             GoRoute(
               path: 'modal',
@@ -43,7 +68,7 @@ class MyApp extends StatelessWidget {
       routeInformationParser: goRouter.routeInformationParser,
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        primarySwatch: Colors.amber,
+        primarySwatch: Colors.blue,
       ),
     );
   }
@@ -56,10 +81,37 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Home Page'),
-        backgroundColor: Colors.red,
+        title: const Text(
+          'Home Page',
+          style: TextStyle(color: Colors.white),
+        ),
+        backgroundColor: const Color(0xff242526),
       ),
-      backgroundColor: Colors.red,
+      drawer: Drawer(
+        child: Center(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  context.go('/detail');
+                },
+                child: const CenteredText("Detail"),
+              ),
+              const SizedBox(
+                height: 32,
+              ),
+              ElevatedButton(
+                onPressed: () => context.go('/modal'),
+                child: const CenteredText('Modal'),
+              )
+            ],
+          ),
+        ),
+      ),
+      backgroundColor: const Color(0xff242526),
       body: Padding(
         padding: const EdgeInsets.all(32.0),
         child: Center(
@@ -111,6 +163,13 @@ class DetailScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             mainAxisSize: MainAxisSize.min,
             children: [
+              ElevatedButton(
+                onPressed: () => context.pop(),
+                child: const CenteredText('Back'),
+              ),
+              const SizedBox(
+                height: 32,
+              ),
               ElevatedButton(
                 onPressed: () => context.go('/modal'),
                 child: const CenteredText('go /modal'),
