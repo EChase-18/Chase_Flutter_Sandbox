@@ -1,5 +1,10 @@
+import 'dart:convert';
+import 'dart:isolate';
+
+import 'package:chase_sandbox_one/isolate_data_object.dart';
 import 'package:chase_sandbox_one/the_matrix.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show rootBundle;
 import 'package:go_router/go_router.dart';
 
 final GlobalKey<NavigatorState> navKey = GlobalKey(debugLabel: "Happy Key");
@@ -192,6 +197,41 @@ class DetailScreen extends StatelessWidget {
 class ModalScreen extends StatelessWidget {
   const ModalScreen({Key? key}) : super(key: key);
 
+  Future<Map<String, dynamic>> messWithIsolates() async {
+    final newPort = ReceivePort();
+    // ignore: avoid_print
+    print("Main Isolate: Sending Port to Child Isolate");
+    final jsonStuff = await rootBundle.loadString('json_baseball.json');
+    final isolateObject = IsolateDataObject(jsonData: jsonStuff, newSendPort: newPort.sendPort);
+    await Isolate.spawn(childIsolateWork, isolateObject);
+    // ignore: avoid_print
+    print("Main Isolate: Waiting for Child Isolate");
+    return await newPort.first as Map<String, dynamic>;
+  }
+
+  Future<void> childIsolateWork(IsolateDataObject data) async {
+    // ignore: avoid_print
+    print("Child Isolate Started");
+    final stuff = jsonDecode(data.jsonData);
+    // final stuff = await rootBundle.loadString('json1.json');
+    print("Child Isolate: Parsed Json File");
+    final anotherPort = ReceivePort();
+    await Isolate.spawn(secondChildIsolateWork, anotherPort.sendPort);
+    await Future.delayed(const Duration(seconds: 4));
+    print("Child Isolate: Checkpoint 1");
+    // newSendPort.send(stuff);
+    Isolate.exit(data.newSendPort, stuff);
+  }
+
+  Future<void> secondChildIsolateWork(SendPort newPort) async {
+    print("Child Isolate 2: Started");
+    await Future.delayed(const Duration(seconds: 2));
+    print("Child Isolate 2: Checkpoint 1");
+    await Future.delayed(const Duration(seconds: 4));
+    print("Child Isolate 2: Checkpoint 2");
+    Isolate.exit();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -200,6 +240,18 @@ class ModalScreen extends StatelessWidget {
         backgroundColor: Colors.blue,
       ),
       backgroundColor: Colors.blue,
+      body: Center(
+        child: ElevatedButton(
+          onPressed: () async {
+            var something = await messWithIsolates();
+            print("Received a json");
+            something.forEach((key, value) {
+              print("Following: $key, $value");
+            });
+          },
+          child: const Text("Test Isolates"),
+        ),
+      ),
     );
   }
 }
