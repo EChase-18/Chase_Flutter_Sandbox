@@ -33,7 +33,8 @@ class MyApp extends StatelessWidget {
           pageBuilder: (context, state) => CustomTransitionPage(
             child: const HomeScreen(),
             transitionDuration: const Duration(seconds: 5),
-            transitionsBuilder: (context, anim1, anim2, child) => SizeTransition(
+            transitionsBuilder: (context, anim1, anim2, child) =>
+                SizeTransition(
               sizeFactor: anim1,
               axis: Axis.vertical,
               axisAlignment: 1.0,
@@ -50,7 +51,8 @@ class MyApp extends StatelessWidget {
               pageBuilder: (context, state) => CustomTransitionPage(
                 child: const DetailScreen(),
                 transitionDuration: const Duration(milliseconds: 150),
-                transitionsBuilder: (context, anim1, anim2, child) => FadeTransition(
+                transitionsBuilder: (context, anim1, anim2, child) =>
+                    FadeTransition(
                   opacity: anim1,
                   child: child,
                 ),
@@ -202,7 +204,8 @@ class ModalScreen extends StatelessWidget {
     // ignore: avoid_print
     print("Main Isolate: Sending Port to Child Isolate");
     final jsonStuff = await rootBundle.loadString('json_baseball.json');
-    final isolateObject = IsolateDataObject(jsonData: jsonStuff, newSendPort: newPort.sendPort);
+    final isolateObject =
+        IsolateDataObject(jsonData: jsonStuff, newSendPort: newPort.sendPort);
     await Isolate.spawn(childIsolateWork, isolateObject);
     // ignore: avoid_print
     print("Main Isolate: Waiting for Child Isolate");
@@ -211,24 +214,24 @@ class ModalScreen extends StatelessWidget {
 
   Future<void> childIsolateWork(IsolateDataObject data) async {
     // ignore: avoid_print
-    print("Child Isolate Started");
+    debugPrint("Child Isolate Started");
     final stuff = jsonDecode(data.jsonData);
     // final stuff = await rootBundle.loadString('json1.json');
-    print("Child Isolate: Parsed Json File");
+    debugPrint("Child Isolate: Parsed Json File");
     final anotherPort = ReceivePort();
     await Isolate.spawn(secondChildIsolateWork, anotherPort.sendPort);
     await Future.delayed(const Duration(seconds: 4));
-    print("Child Isolate: Checkpoint 1");
+    debugPrint("Child Isolate: Checkpoint 1");
     // newSendPort.send(stuff);
     Isolate.exit(data.newSendPort, stuff);
   }
 
   Future<void> secondChildIsolateWork(SendPort newPort) async {
-    print("Child Isolate 2: Started");
+    debugPrint("Child Isolate 2: Started");
     await Future.delayed(const Duration(seconds: 2));
-    print("Child Isolate 2: Checkpoint 1");
+    debugPrint("Child Isolate 2: Checkpoint 1");
     await Future.delayed(const Duration(seconds: 4));
-    print("Child Isolate 2: Checkpoint 2");
+    debugPrint("Child Isolate 2: Checkpoint 2");
     Isolate.exit();
   }
 
@@ -244,9 +247,9 @@ class ModalScreen extends StatelessWidget {
         child: ElevatedButton(
           onPressed: () async {
             var something = await messWithIsolates();
-            print("Received a json");
+            debugPrint("Received a json");
             something.forEach((key, value) {
-              print("Following: $key, $value");
+              debugPrint("Following: $key, $value");
             });
           },
           child: const Text("Test Isolates"),
@@ -302,7 +305,8 @@ class _MyFirstApp extends State<MyFirstApp> {
         actions: [
           IconButton(
             onPressed: () {
-              navKey.currentState?.pushReplacement(MaterialPageRoute(builder: (_) => TheMatrix()));
+              navKey.currentState?.pushReplacement(
+                  MaterialPageRoute(builder: (_) => TheMatrix()));
             },
             icon: const Icon(Icons.grid_4x4),
           ),
